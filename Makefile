@@ -1,12 +1,15 @@
-Target = slm
+Target = build/slm
 
 all: $(Target)
 
-%.o : %.cpp
-	g++ -c -O2 $^
+build:
+	mkdir -p build
 
-$(Target): slm.o text_generator.o gram_builder.o
+build/%.o : src/%.cpp | build
+	g++ -c -O2 $^ -o $@
+
+$(Target): build/slm.o build/text_generator.o build/gram_builder.o
 	g++ -o $@ $^
 
 clean:
-	rm -f *.o slm
+	rm -rf build
