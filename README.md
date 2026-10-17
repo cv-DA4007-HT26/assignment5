@@ -4,6 +4,8 @@ This project features a language model that generates a text based on an input t
 ## Compilation
 Call "make"
 
+NOTE: Compilation requires a Unix environment
+
 ## Usage
 
 ### Standard usage:
