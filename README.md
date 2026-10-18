@@ -11,7 +11,7 @@ NOTE: Makefile compiles for a Unix environment by default
 
 ### Standard usage:
 
-`.\slm [k value] [text file] [output character limit]`, where the "k value" is the size of the gram
+`./slm [k value] [text file] [output character limit]`, where the "k value" is the size of the gram
 
 ### With pseudocount:
-`.\slm -a [pseudocount] [k value] [text file] [output character limit]`
+`./slm -a [pseudocount] [k value] [text file] [output character limit]`
