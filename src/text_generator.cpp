@@ -79,7 +79,6 @@ text_generator::UpdateGram(gram &ToUpdate, string Word)
 void
 text_generator::Generate(size_t CharCountLimit, double Pseudocount)
 {
-    fprintf(stdout, "Generating text with limit of chars: %zu\n", CharCountLimit);
     gram G{};
     string Word{};
     GetRandomGram(G, Word);
