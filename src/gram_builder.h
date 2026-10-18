@@ -1,37 +1,23 @@
 #pragma once
 
+#include <map>
+#include <set>
+
 #include "util.h"
-
-struct next_char
-{
-    char C;
-
-    size_t Frequency = 1;
-    
-    double Probability;
-};
 
 struct gram
 {
-    string Word;
-
-    vec<next_char> NextChars;
+    size_t Frequency = 0;
+    map<char, size_t> NextChars;
     size_t TotalNextChars = 0;
-
-    size_t Frequency = 1;
 };
 
 class gram_builder
 {
 protected:
-    vec<gram> Grams; // NOTE: Uniques
-
-private:
-    void MergeDuplicates();
-    void MergeGrams(gram &Dest, gram &Src);
-    void ComputeNextCharProbs();
+    map<string, gram> Grams;
     
 public:
-    const vec<gram> &GetGrams() const;
-    void Build(const char *TrainingFileName, size_t k_);
+    const map<string, gram> &GetGrams() const;
+    void Build(const char *TrainingFileName, size_t k_, double Pseudocount);
 };

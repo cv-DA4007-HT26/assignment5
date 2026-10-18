@@ -5,64 +5,100 @@
 
 #include "text_generator.h"
 
-template<typename T>
-T text_generator::GetRandomEntry(vec<T> &V)
+char
+text_generator::GetRandomChar(map<char, size_t> &Entries)
 {
-    // TODO: Error handling for empty V
+    if(Entries.empty())
+	throw runtime_error("Attempted fetch from empty map");
     
-    vec<double> Weights(V.size());
+    vec<double> Weights(Entries.size());
 
-    for(size_t EntryIdx = 0;
-	EntryIdx < V.size();
-	++EntryIdx)
+    size_t EntryIdx = 0;
+    for(const auto &[C, Frequency] : Entries)
     {
-	Weights[EntryIdx] = V[EntryIdx].Frequency;
+	Weights[EntryIdx++] = Frequency;
     }
     
     discrete_distribution<size_t> D(Weights.begin(), Weights.end());
 
     size_t Index = D(RNG);
 
-    return V[Index];
-}
-
-inline bool
-text_generator::UpdateGram(gram &ToUpdate, vec<gram> Grams, string Word)
-{
-    for(gram &G : Grams)
+    size_t SearchIdx = 0;
+    char DesiredChar = 0;
+    for(const auto &[C, Frequency] : Entries)
     {
-	if(G.Word == Word)
+	if(SearchIdx++ == Index)
 	{
-	    ToUpdate = G;
-	    return true;
+	    DesiredChar = C;
+	    break;
 	}
     }
-
-    return false;
+    
+    return DesiredChar;
 }
 
 void
-text_generator::Generate(size_t CharCountLimit)
+text_generator::GetRandomGram(gram &G, string &Word)
 {
-    gram G = GetRandomEntry<gram>(Grams);
+    if(Grams.empty())
+	throw runtime_error("No grams to generate text from");
+
+    vec<string> Words;
+    vec<double> Weights;
+
+    for(const auto &[W, G] : Grams)
+    {
+	Words.push_back(W);
+	Weights.push_back(G.Frequency);
+    }
+
+    discrete_distribution<size_t> D(Weights.begin(), Weights.end());
+
+    size_t Index = D(RNG);
     
-    fprintf(stdout, "%s", G.Word.c_str());
+    Word = Words[Index];
+    G = Grams[Word];    
+}
+
+inline bool
+text_generator::UpdateGram(gram &ToUpdate, string Word)
+{
+    auto It = Grams.find(Word);
     
-    size_t CharCount = G.Word.size();
+    if(It == Grams.end()) // NOTE: Not in map
+	return false;
+
+    ToUpdate = It->second;
+
+    return true;
+}
+
+void
+text_generator::Generate(size_t CharCountLimit, double Pseudocount)
+{
+    gram G{};
+    string Word{};
+    GetRandomGram(G, Word);
+    
+    fprintf(stdout, "%s", Word.c_str());
+    
+    size_t CharCount = Word.size();
     while(CharCount < CharCountLimit)
     {    
-	next_char NC = GetRandomEntry<next_char>(G.NextChars);
+	char NextChar = GetRandomChar(G.NextChars);
 
-	fprintf(stdout, "%c", NC.C);    
+	fprintf(stdout, "%c", NextChar);    
 	++CharCount;
     
-	string NewWord = G.Word + NC.C;
+	string NewWord = Word + NextChar;
 	NewWord.erase(NewWord.begin());
 	
-	if(!UpdateGram(G, Grams, NewWord))
+	if(!UpdateGram(G, NewWord))
 	{
 	    break;
 	}
+
+	Word = NewWord;
     }
 
     fprintf(stdout, "\n");    

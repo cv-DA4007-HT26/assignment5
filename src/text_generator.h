@@ -4,16 +4,17 @@
 #include "gram_builder.h"
 #include <random>
 #include <exception>
+#include <map>
 
 class text_generator : public gram_builder
 {
 private:
     mt19937 RNG;
-    
-    template<typename T>
-    T GetRandomEntry(vec<T> &V);
 
-    inline bool UpdateGram(gram &ToUpdate, vec<gram> Grams, string Word);
+    char GetRandomChar(map<char, size_t> &Entries);
+    void GetRandomGram(gram &G, string &Word);
+
+    inline bool UpdateGram(gram &ToUpdate, string Word);    
     
 public:
     text_generator()
@@ -30,5 +31,5 @@ public:
 	Grams = G.GetGrams();
     }
 
-    void Generate(size_t CharCountLimit);
+    void Generate(size_t CharCountLimit, double Pseudocount);
 };

@@ -11,26 +11,25 @@
 
 struct slm_args
 {
-    double PseudoCount;
+    double Pseudocount;
     size_t GramSz;
     const char *TrainingFileName;
     size_t CharOutputCount;
 };
 
-inline double ExtractPseudoCount(char **Args, int &ArgIdx)
+inline double ExtractPseudocount(char **Args, int &ArgIdx)
 {	
     string A(Args[ArgIdx++]);
 
     if(A != "-a")
 	throw runtime_error("Invalid pseudocount flag");
 
-    // TODO: This is bad handling. atof returns 0 if no conversion could be done
-    double PseudoCount = atof(Args[ArgIdx++]);
+    double Pseudocount = stod(Args[ArgIdx++]);
 
-    if(PseudoCount < 0)
-	throw runtime_error("Negative pseudocount\n");
+    if(Pseudocount < 0)
+	throw runtime_error("Negative pseudocount");
 
-    return PseudoCount;
+    return Pseudocount;
 }
 
 slm_args ExtractArgs(int ArgCount, char **Args)
@@ -38,14 +37,25 @@ slm_args ExtractArgs(int ArgCount, char **Args)
     slm_args A{};
     
     if(!((ArgCount >= 4) && (ArgCount <= 6)))
-	throw runtime_error("Invalid argument count\n");
+	throw runtime_error("Invalid argument count");
 
     int ArgIdx = 1;
-
-    double PseudoCount = 0;
     
     if(ArgCount == 6)
-	A.PseudoCount = ExtractPseudoCount(Args, ArgIdx);
+    {
+	try
+	{
+	    A.Pseudocount = ExtractPseudocount(Args, ArgIdx);
+	}
+	catch(const invalid_argument &E)
+	{
+	    throw invalid_argument("No conversion could be performed");
+	}
+	catch(const out_of_range &E)
+	{
+	    throw out_of_range("Pseudocount is larger than a double");
+	}
+    }
 
     A.GramSz = atoi(Args[ArgIdx++]);
     if(A.GramSz < 0)
@@ -71,10 +81,12 @@ int main(int ArgCount, char **Args_)
 	slm_args Args = ExtractArgs(ArgCount, Args_);
     
 	gram_builder Builder;
-	Builder.Build(Args.TrainingFileName, Args.GramSz);
+	Builder.Build(Args.TrainingFileName,
+		      Args.GramSz,
+		      Args.Pseudocount);
 		
 	text_generator Generator(Builder);
-	Generator.Generate(Args.CharOutputCount);
+	Generator.Generate(Args.CharOutputCount, Args.Pseudocount);
     }
     catch(const exception &E)
     {
