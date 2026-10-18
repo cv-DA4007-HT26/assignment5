@@ -11,7 +11,7 @@ class text_generator : public gram_builder
 private:
     mt19937 RNG;
 
-    char GetRandomChar(map<char, size_t> &Entries);
+    char GetRandomChar(map<char, size_t> &Entries, double Pseudocount);
     void GetRandomGram(gram &G, string &Word);
 
     inline bool UpdateGram(gram &ToUpdate, string Word);    
@@ -29,6 +29,7 @@ public:
 	RNG.seed(RD());
 
 	Grams = G.GetGrams();
+	Alphabet = G.GetAlphabet();
     }
 
     void Generate(size_t CharCountLimit, double Pseudocount);

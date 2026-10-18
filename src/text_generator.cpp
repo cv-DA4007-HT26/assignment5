@@ -6,26 +6,29 @@
 #include "text_generator.h"
 
 char
-text_generator::GetRandomChar(map<char, size_t> &Entries)
+text_generator::GetRandomChar(map<char, size_t> &Entries, double Pseudocount)
 {
-    if(Entries.empty())
-	throw runtime_error("Attempted fetch from empty map");
-    
-    vec<double> Weights(Entries.size());
+    vec<double> Weights(Alphabet.size());
 
-    size_t EntryIdx = 0;
-    for(const auto &[C, Frequency] : Entries)
+    size_t WeightIdx = 0;
+    for(const char C : Alphabet)
     {
-	Weights[EntryIdx++] = Frequency;
+	size_t Freq = 0;
+	if(Entries.find(C) != Entries.end())
+	{
+	    Freq += Entries[C];
+	}
+
+	Weights[WeightIdx++] = Freq + Pseudocount;
     }
     
     discrete_distribution<size_t> D(Weights.begin(), Weights.end());
 
     size_t Index = D(RNG);
-
+    
     size_t SearchIdx = 0;
     char DesiredChar = 0;
-    for(const auto &[C, Frequency] : Entries)
+    for(const char C : Alphabet)
     {
 	if(SearchIdx++ == Index)
 	{
@@ -76,6 +79,7 @@ text_generator::UpdateGram(gram &ToUpdate, string Word)
 void
 text_generator::Generate(size_t CharCountLimit, double Pseudocount)
 {
+    fprintf(stdout, "Generating text with limit of chars: %zu\n", CharCountLimit);
     gram G{};
     string Word{};
     GetRandomGram(G, Word);
@@ -84,8 +88,8 @@ text_generator::Generate(size_t CharCountLimit, double Pseudocount)
     
     size_t CharCount = Word.size();
     while(CharCount < CharCountLimit)
-    {    
-	char NextChar = GetRandomChar(G.NextChars);
+    {	
+	char NextChar = GetRandomChar(G.NextChars, Pseudocount);
 
 	fprintf(stdout, "%c", NextChar);    
 	++CharCount;
@@ -95,10 +99,13 @@ text_generator::Generate(size_t CharCountLimit, double Pseudocount)
 	
 	if(!UpdateGram(G, NewWord))
 	{
-	    break;
+	    // NOTE: Couldn't find an appropriate gram based on the new word, restart
+	    GetRandomGram(G, Word);
 	}
-
-	Word = NewWord;
+	else
+	{
+	    Word = NewWord;
+	}	
     }
 
     fprintf(stdout, "\n");    

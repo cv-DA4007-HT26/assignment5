@@ -16,8 +16,10 @@ class gram_builder
 {
 protected:
     map<string, gram> Grams;
+    set<char> Alphabet;
     
 public:
+    const set<char> &GetAlphabet() const;
     const map<string, gram> &GetGrams() const;
     void Build(const char *TrainingFileName, size_t k_, double Pseudocount);
 };

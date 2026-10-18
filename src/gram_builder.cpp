@@ -11,10 +11,19 @@ gram_builder::GetGrams() const
     return Grams;
 }
 
+const set<char> &
+gram_builder::GetAlphabet() const
+{
+    return Alphabet;
+}
+
 void
 gram_builder::Build(const char *TrainingFileName, size_t GramSz, double Pseudocount)
 {
     vec<char> FileContents = ReadFile(TrainingFileName);
+
+    for(const char C : FileContents)
+	Alphabet.insert(C);
     
     char *Mem = FileContents.data();
     char *End = Mem + FileContents.size();
