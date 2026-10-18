@@ -1,6 +1,5 @@
 #include <string>
 
-#include "gram_builder.h"
 #include "util.h"
 
 #include "text_generator.h"

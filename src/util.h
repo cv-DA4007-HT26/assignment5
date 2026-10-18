@@ -35,3 +35,41 @@ inline vec<char> ReadFile(const char *FileName)
 
     return FileContents;
 }
+
+inline double StringToDouble(char *Str)
+{
+    try
+    {
+	double D = stod(Str);
+	return D;
+    }
+    catch(const invalid_argument &E)
+    {
+	throw invalid_argument("No conversion could be performed");
+    }
+    catch(const out_of_range &E)
+    {
+	throw out_of_range("Pseudocount is larger than a double");
+    }
+
+    return 0;
+}
+
+inline int StringToInteger(char *Str)
+{
+    try
+    {
+	int I = stoi(Str);
+	return I;
+    }
+    catch(const invalid_argument &E)
+    {
+	throw invalid_argument("No conversion could be performed");
+    }
+    catch(const out_of_range &E)
+    {
+	throw out_of_range("Pseudocount is larger than a double");
+    }
+
+    return 0;
+}

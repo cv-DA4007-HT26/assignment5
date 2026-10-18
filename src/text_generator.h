@@ -2,6 +2,7 @@
 
 #include "util.h"
 #include "gram_builder.h"
+
 #include <random>
 #include <exception>
 #include <map>
@@ -14,7 +15,7 @@ private:
     char GetRandomChar(map<char, size_t> &Entries, double Pseudocount);
     void GetRandomGram(gram &G, string &Word);
 
-    inline bool UpdateGram(gram &ToUpdate, string Word);    
+    inline bool UpdateGram(gram &ToUpdate, string Word);
     
 public:
     text_generator()
