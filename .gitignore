@@ -1,0 +1,8 @@
+# Build
+/build/
+
+# Emacs files
+*~
+
+# Data
+/data/
