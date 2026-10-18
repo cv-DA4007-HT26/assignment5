@@ -4,7 +4,9 @@ This project features a language model that generates a text based on an input t
 ## Compilation
 Call "make"
 
-NOTE: Makefile compiles for a Unix environment by default
+Requirements:
+- C++17
+- Unix environment (by default)
 
 ## Usage
 (From the build directory)
