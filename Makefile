@@ -1,15 +1,22 @@
-Target = build/slm
+CXX = g++
+CXXFLAGS = -Wall -std=c++17 -O2
 
-all: $(Target)
+CLEAN = rm -rf
+
+OBJECTFILES = build/slm.o build/text_generator.o build/gram_builder.o
+
+TARGET = build/slm
+
+all: $(TARGET)
 
 build:
 	mkdir -p build
 
 build/%.o : src/%.cpp | build
-	g++ -c -O2 $^ -o $@
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
-$(Target): build/slm.o build/text_generator.o build/gram_builder.o
-	g++ -o $@ $^
+$(TARGET): $(OBJECTFILES)
+	$(CXX) -o $@ $^
 
 clean:
-	rm -rf build
+	$(CLEAN) build
