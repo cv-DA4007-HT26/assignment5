@@ -21,6 +21,9 @@ gram_builder::Build(const char *TrainingFileName, size_t GramSz, double Pseudoco
 {
     vec<char> FileContents = ReadFile(TrainingFileName);
 
+    if(FileContents.empty())
+	throw runtime_error("Empty training file");
+    
     for(const char C : FileContents)
 	Alphabet.insert(C);
     
@@ -30,7 +33,7 @@ gram_builder::Build(const char *TrainingFileName, size_t GramSz, double Pseudoco
     while((Mem + GramSz) <= End)
     {
 	string Str;
-
+	
 	for(size_t CharIdx = 0;
 	    CharIdx < GramSz;
 	    ++CharIdx)

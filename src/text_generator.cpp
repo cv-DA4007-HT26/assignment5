@@ -68,8 +68,11 @@ text_generator::UpdateGram(gram &ToUpdate, string Word)
     auto It = Grams.find(Word);
     
     if(It == Grams.end()) // NOTE: Not in map
+    {
+	ToUpdate = {}; // NOTE: So that the next "next char" prob is uniform
 	return false;
-
+    }
+    
     ToUpdate = It->second;
 
     return true;
