@@ -76,7 +76,7 @@ slm_args ExtractArgs(int ArgCount, char **Args)
     }
 
     A.GramSz = StringToInteger(Args[ArgIdx++]);
-    if(A.GramSz < 0)
+    if(A.GramSz <= 0)
 	throw runtime_error("Invalid gram size");
 	
     A.TrainingFileName = Args[ArgIdx++];

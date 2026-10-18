@@ -75,6 +75,7 @@ text_generator::UpdateGram(gram &ToUpdate, string Word)
     return true;
 }
 
+// NOTE: This function is probably not properly implemented
 void
 text_generator::Generate(size_t CharCountLimit, double Pseudocount)
 {
@@ -95,15 +96,13 @@ text_generator::Generate(size_t CharCountLimit, double Pseudocount)
 	string NewWord = Word + NextChar;
 	NewWord.erase(NewWord.begin());
 	
-	if(!UpdateGram(G, NewWord))
+	if(!UpdateGram(G, NewWord) &&
+	   !Pseudocount)
 	{
-	    // NOTE: Couldn't find an appropriate gram based on the new word, restart
-	    GetRandomGram(G, Word);
+	    break;
 	}
-	else
-	{
-	    Word = NewWord;
-	}	
+	
+	Word = NewWord;
     }
 
     fprintf(stdout, "\n");    
